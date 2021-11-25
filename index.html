@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Hasbulla</title>
+    <link rel="icon" href="images/bulla5.png" />
+  </head>
+  <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      letter-spacing: 2px;
+    }
+
+    body {
+      background-color: rgb(243, 243, 243);
+    }
+
+    h1 {
+      font-size: 47px;
+      margin-top: 0px;
+    }
+
+    #image-container {
+      display: none;
+      text-align: center;
+      margin: 30px;
+    }
+
+    img {
+      width: 82px;
+      height: auto;
+    }
+
+    .img-alt {
+      width: 120px;
+      height: auto;
+    }
+
+    .main-container {
+      color: rgb(59, 59, 59);
+      background-color: white;
+      text-align: center;
+      margin-top: 30px;
+      margin-left: 25%;
+      margin-right: 25%;
+      padding: 30px;
+      height: 525px;
+    }
+
+    @media only screen and (max-width: 1000px) {
+      .main-container {
+        margin-left: 1%;
+        margin-right: 1%;
+      }
+    }
+    #pressMe {
+      font-weight: bold;
+      color: white;
+      background-color: rgb(112, 112, 112);
+      width: 70%;
+      height: 40px;
+      border: none;
+      border-radius: 2px;
+      letter-spacing: 3px;
+      transition-duration: 0.2s;
+    }
+
+    #hasbulla-description {
+    }
+
+    #pressMe:hover {
+      background-color: rgb(158, 158, 158);
+    }
+
+    #pressMe:active {
+      color: rgb(54, 54, 54);
+    }
+
+    #hasbulla-description {
+      display: none;
+    }
+
+    #hasbulla-description-onclick {
+      display: block;
+    }
+
+    .popup {
+
+    }
+    #reset-button {
+      display: none;
+      font-weight: bold;
+      color: white;
+      background-color: rgb(112, 112, 112);
+      width: 18%;
+      height: 35px;
+      border: none;
+      border-radius: 2px;
+      letter-spacing: 3px;
+      transition-duration: 0.2s;
+    }
+
+    #reset-button:hover {
+      background-color: rgb(148, 148, 148);;
+    }
+
+    #pressMe:active {
+      color: rgb(54, 54, 54);
+    }
+
+  </style>
+  <body>
+    <div class="main-container">
+      <div>
+        <h1>Summon Hasbulla</h1>
+        <h2>The Greatest of All Time</h2>
+        <p>
+          Generates a random 82x82px image of Hasbulla. Left-click the image to
+          enlarge Hasbulla. Right-click to save the selected Hasbulla for
+          personal use.
+        </p>
+        <div class="hasbulla-container">
+          <div class="button-group">
+            <button id="pressMe" type="button">Generate Hasbulla</button>
+          </div>
+          <!-- IMAGE GOES HERE -->
+          <div class="popup">
+            <div id="image-container">
+              <img src="" alt="" class="hasbulla-face" id="hidden-id" />
+            </div>
+            <div id="hasbulla-title"></div>
+            <div id="hasbulla-description"></div>
+            <br>
+            <button id="reset-button" type="button">Minimize</button>
+            </div>
+          </div>
+          <script>
+            const myButton = document.querySelector("#pressMe");
+            let myImage = document.querySelector(".hasbulla-face");
+            let myDescription = document.getElementById("hasbulla-description");
+            let myTitle = document.getElementById("hasbulla-title");
+            let myResetButton = document.getElementById("reset-button");
+
+            myButton.addEventListener("click", getNewFace);
+
+            myResetButton.addEventListener("click", escKey);
+
+            //Escape or click minimize = return Hasbulla to original size
+            document.addEventListener("keydown", escKey);
+            function escKey(e) {
+              if (e.key === "Escape") {
+                let image = document.getElementById("hidden-id");
+
+                image.style.width = "82px";
+                image.style.height = "auto";
+                document.getElementById("hasbulla-description").style.display =
+                  "none";
+                document.getElementById("reset-button").style.display = "none";
+              } else {
+                let image = document.getElementById("hidden-id");
+
+                image.style.width = "82px";
+                image.style.height = "auto";
+                document.getElementById("hasbulla-description").style.display =
+                  "none";
+                document.getElementById("reset-button").style.display = "none";
+              }
+            };
+
+            //Space bound to generate new hasbulla function, for improved accessibility.
+            document.body.onkeyup = function (e) {
+              if (e.keyCode === 32) {
+                getNewFace();
+              }
+            };
+
+            //Prevent use of cache for .json, to avoid errors after modifying .json content!
+            let myHeaders = new Headers();
+            myHeaders.append("pragma", "no-cache");
+            myHeaders.append("cache-control", "no-cache");
+
+            let myInit = {
+              method: "GET",
+              headers: myHeaders,
+            };
+
+            async function getNewFace() {
+              const response = await fetch("hasbulla.json", myInit);
+              const responseContent = await response.json();
+              const randomNumber = Math.floor(
+                Math.random() * responseContent.length
+              );
+
+              myImage.setAttribute("src", responseContent[randomNumber].url);
+              myImage.setAttribute(
+                "alt",
+                responseContent[randomNumber].description
+              );
+              myImage.setAttribute("title", responseContent[randomNumber].id);
+              //prints decription to screen in hidden element, ready for display:
+              myDescription.textContent = `${responseContent[randomNumber].description}`;
+              myTitle.textContent = `${responseContent[randomNumber].title}`;
+
+              document.getElementById("hasbulla-description").style.display =
+                "none";
+              document.getElementById("hasbulla-title").style.display = "inline";
+              document.getElementById("reset-button").style.display = "none";
+
+              let image = document.getElementById("hidden-id");
+
+              let imageSize = document.getElementById("image-container");
+
+              image.style.width = "82px";
+              image.style.height = "auto";
+
+              if (imageSize.style.display === "none") {
+                imageSize.style.display = "block";
+              } else {
+                imageSize.style.display = "block";
+              }
+            }
+
+            let modalButton = document.getElementById("hidden-id");
+            modalButton.addEventListener("click", clickHasbulla);
+
+            //Home-made enlargement toggle and description display:
+            function clickHasbulla() {
+              let image = document.getElementById("hidden-id");
+
+              if (image.style.width === "82px") {
+                document.getElementById("hasbulla-description").style.display =
+                  "block";
+                image.style.width = "120px";
+                image.style.height = "auto";
+              }
+              document.getElementById("reset-button").style.display = "inline";
+            }
+
+            //reset button
+
+
+
+
+          </script>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
